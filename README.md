@@ -1,4 +1,14 @@
 # LunarLander
-*Work in progress*
 
-This project attempts a ("deep") Q-learning solution for OpenAI Gym's Lunar Lander environment. Gradient boosted decision trees are used for policy in lieu of a neural network. This decision was motivated by the following: https://towardsdatascience.com/reinforcement-learning-q-learning-with-decision-trees-ecb1215d9131.
+##### Intro
+This project demonstrates a solution for OpenAI Gym's continuous action space Lunar Lander environment usng the Twin Delayed DDPG (TD3) algorithm. 
+ 
+##### Resources:
+ - LunarLander 
+   - [Environment](http://gym.openai.com/envs/LunarLanderContinuous-v2/)
+ - Twin Delayed DDPG:
+   - [Paper](https://arxiv.org/abs/1802.09477)
+   - [Repository](https://github.com/sfujim/TD3)
+   
+   
+   
