@@ -83,7 +83,6 @@ class Critic(nn.Module):
 
         Xu = torch.cat([state, action], axis=1)
 
-        # First critic forward pass
         X = F.relu(self.layer_1(Xu))
         X = F.relu(self.layer_2(X))
         X = (self.layer_3(X))
