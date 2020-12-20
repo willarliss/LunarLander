@@ -12,15 +12,18 @@ class ReplayBuffer:
         self.ptr = 0
         self.storage = []
         self.max_len = max_len
+        self.curr_len = len(self.storage)
     
     def add(self, transition):
 
-        if len(self.storage) == self.max_len:
+        if self.curr_len == self.max_len:
             self.storage[int(self.ptr)] = transition
             self.ptr = (self.ptr + 1) % self.max_len
 
         else:
             self.storage.append(transition)
+            
+        self.curr_len = len(self.storage)
 
     def sample(self, batch_size):
 
@@ -51,7 +54,7 @@ class Agent:
     def __init__(self, *args, mem_size=1e6, eta=1e-3, **kwargs):
 
         self.mem_size = mem_size
-        self.reset_buffer()
+        self.replay_buffer = self.reset_replay_buffer()
 
     def select_action(self, state, **kwargs):
 
@@ -64,14 +67,20 @@ class Agent:
             .flatten()
         )
 
+    def reset_replay_buffer(self, inplace=False, size=None, **kwargs):
+        
+        if size is None:
+            size = self.mem_size
+            
+        if inplace:
+            self.replay_buffer = ReplayBuffer(max_len=size)
+        else:
+            return ReplayBuffer(max_len=size)
+        
     def train(self, iterations=100, batch_size=100, gamma=0.99, policy_noise=0.2, noise_clip=0.5, **kwargs):
 
         pass
     
-    def reset_buffer(self, *args, **kwargs):
-        
-        self.replay_buffer = ReplayBuffer(max_len=self.mem_size)
-        
     def save(self, filename, directory, **kwargs):
 
         pass

@@ -44,7 +44,7 @@ class DQN(Agent):
         self.value_fn_optimizer = torch.optim.Adam(self.value_fn.parameters(), lr=eta)
 
         self.mem_size = mem_size
-        self.reset_buffer()
+        self.replay_buffer = self.reset_replay_buffer()
 
     def select_action(self, state):
 
@@ -59,7 +59,7 @@ class DQN(Agent):
         
         return np.argmax(Q_values)
         
-    def train(self, iterations, batch_size=100, gamma=0.99, tau=0.0, policy_freq=2):
+    def train(self, iterations, batch_size=100, gamma=0.99, tau=0.0, policy_freq=3):
 
         for i in np.arange(iterations):
 

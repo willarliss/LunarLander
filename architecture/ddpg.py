@@ -75,7 +75,7 @@ class DDPG(Agent):
         self.max_action = max_action
         
         self.mem_size = mem_size
-        self.reset_buffer()
+        self.replay_buffer = self.reset_replay_buffer()
         
     def train(self, iterations, batch_size=100, gamma=0.99, policy_noise=0.2, noise_clip=0.5):
 
