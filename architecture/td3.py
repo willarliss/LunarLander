@@ -3,48 +3,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from architecture.base import Agent
+
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
-
-class ReplayBuffer(object):
-
-    def __init__(self, max_len=1e6):
-
-        self.ptr = 0
-        self.storage = []
-        self.max_len = max_len
-    
-    def add(self, transition):
-
-        if len(self.storage) == self.max_len:
-            self.storage[int(self.ptr)] = transition
-            self.ptr = (self.ptr + 1) % self.max_len
-
-        else:
-            self.storage.append(transition)
-
-    def sample(self, batch_size):
-
-        idx = np.random.randint(0, len(self.storage), size=batch_size)
-        batch_states, batch_next_states, batch_actions, batch_rewards, batch_dones = [], [], [], [], []
-
-        for i in idx:
-            state, next_state, action, reward, done = self.storage[i]
-      
-            batch_states.append(np.array(state, copy=False))
-            batch_next_states.append(np.array(next_state, copy=False))
-            batch_actions.append(np.array(action, copy=False))
-            batch_rewards.append(np.array(reward, copy=False))
-            batch_dones.append(np.array(done, copy=False))
-
-        return (
-            np.array(batch_states),
-            np.array(batch_next_states),
-            np.array(batch_actions),
-            np.array(batch_rewards).reshape((-1,1)),
-            np.array(batch_dones).reshape((-1,1)), 
-        )
 
 
 
@@ -63,9 +24,9 @@ class Actor(nn.Module):
 
         X = F.relu(self.layer_1(state))
         X = F.relu(self.layer_2(X))
-        X = torch.tanh(self.layer_3(X)) * self.max_action
+        X = torch.tanh(self.layer_3(X)) 
 
-        return X
+        return X * self.max_action
 
 
 
@@ -85,14 +46,17 @@ class Critic(nn.Module):
 
         X = F.relu(self.layer_1(Xu))
         X = F.relu(self.layer_2(X))
-        X = (self.layer_3(X))
+        X = self.layer_3(X)
 
         return X
 
 
-class TD3(object):
+    
+class TD3(Agent):
 
     def __init__(self, state_dim, action_dim, max_action, mem_size=1e6, eta=1e-3):
+        
+        super(TD3, self).__init__()
 
         self.actor = Actor(state_dim, action_dim, max_action).to(DEVICE)
         self.actor_target = Actor(state_dim, action_dim, max_action).to(DEVICE)
@@ -110,19 +74,9 @@ class TD3(object):
         self.critic_2_optimizer = torch.optim.Adam(self.critic_2.parameters(), lr=eta)
 
         self.max_action = max_action
+        
         self.mem_size = mem_size
-        self.replay_buffer = ReplayBuffer(max_len=self.mem_size)
-
-    def select_action(self, state):
-
-        state = torch.FloatTensor(state.reshape(1,-1)).to(DEVICE)
-
-        return (self.actor(state)
-            .cpu()
-            .data
-            .numpy()
-            .flatten()
-        )
+        self.reset_buffer()
 
     def train(self, iterations, batch_size=100, gamma=0.99, tau=0.001, policy_noise=0.2, noise_clip=0.5, policy_freq=2):
 
@@ -187,10 +141,6 @@ class TD3(object):
                         (tau * param.data) + ((1-tau) * target_param.data)
                     )
                 
-    def reset_buffer(self):
-        
-        self.replay_buffer = ReplayBuffer(max_len=self.mem_size)
-        
     def save(self, filename, directory):
 
         torch.save(self.actor.state_dict(), f'{directory}/{filename}_actor.pth')
@@ -204,4 +154,4 @@ class TD3(object):
         self.critic_2.load_state_dict(torch.load(f'{directory}/{filename}_critic_2.pth'))
 
 
-         
+          
