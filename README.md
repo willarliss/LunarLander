@@ -1,9 +1,9 @@
 # LunarLander
 
-##### Intro
-This project demonstrates a solution for OpenAI Gym's continuous action space Lunar Lander environment using the Twin Delayed DDPG (TD3) algorithm. 
+#### Description:
+This project demonstrates a solution for OpenAI Gym's continuous action space Lunar Lander environment using the Twin Delayed Deep Deterministic Policy Gradient (TD3) algorithm. 
  
-##### Resources:
+#### Resources:
  - LunarLander 
    - [Environment](http://gym.openai.com/envs/LunarLanderContinuous-v2/)
  - Twin Delayed DDPG:
