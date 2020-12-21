@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from architecture.base import Agent
+from utilities.architectures.base import Agent
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
